@@ -21,7 +21,7 @@ export const Route = createFileRoute("/audit")({
       },
     ],
   }),
-  component: AuditLog. bind(null) as never,
+  component: AuditLog,
 });
 
 function AuditLog() {
