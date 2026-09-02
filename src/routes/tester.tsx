@@ -27,7 +27,7 @@ export const Route = createFileRoute("/tester")({
 function Tester() {
   const { pipeline } = usePipeline();
   const m = getMetrics(pipeline);
-  const [presetId, setPresetId] = useState(TXN_PRESETS[0].id);
+  const [presetId, setPresetId] = useState(TXN_PRESETS[0]!.id);
   const [runId, setRunId] = useState(0);
   const [completed, setCompleted] = useState(0);
 

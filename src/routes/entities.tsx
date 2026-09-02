@@ -24,7 +24,7 @@ export const Route = createFileRoute("/entities")({
 });
 
 function Entities() {
-  const [selectedId, setSelectedId] = useState(CUSTOMERS[0].id);
+  const [selectedId, setSelectedId] = useState(CUSTOMERS[0]!.id);
   const [state, setState] = useState<"idle" | "running" | "done">("idle");
   const customer = CUSTOMERS.find((c) => c.id === selectedId)!;
 
