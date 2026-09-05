@@ -1,7 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { PIPELINES, getMetrics } from "@/lib/demo-data";
+import { useQuery } from "@tanstack/react-query";
+import { PIPELINES } from "@/lib/demo-data";
 import { usePipeline } from "@/lib/pipeline-context";
+import { fetchRealMetrics, type RealMetrics } from "@/lib/real-api";
 
 const NAV = [
   { to: "/", label: "Overview" },
@@ -21,7 +23,13 @@ export function AppShell({
 }) {
   const { pipeline, setPipeline } = usePipeline();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const metrics = getMetrics(pipeline);
+  // Same queryKey as index.tsx -- react-query dedupes this into a single shared
+  // fetch/cache entry, so this doesn't cause an extra network request per page.
+  const { data: metrics } = useQuery<RealMetrics>({
+    queryKey: ["metrics", pipeline],
+    queryFn: () => fetchRealMetrics(pipeline),
+    retry: false,
+  });
 
   return (
     <div className="flex min-h-screen">
@@ -38,7 +46,9 @@ export function AppShell({
           </div>
           <div className="leading-none">
             <p className="font-display text-[13px] font-semibold">Fraudline</p>
-            <p className="label-caps mt-1">Ops console {metrics.version}</p>
+            <p className="label-caps mt-1">
+              {metrics ? "RandomForest · live" : "Ops console"}
+            </p>
           </div>
         </div>
 
@@ -134,7 +144,10 @@ export function AppShell({
           <div className="num flex flex-wrap items-center justify-between gap-2 text-[10px] text-muted-foreground">
             <span>Fraudline fraud-ops · internal</span>
             <span>
-              pipeline {pipeline} · append-only · {metrics.trainedOn}
+              pipeline {pipeline} · append-only ·{" "}
+              {metrics
+                ? `${metrics.held_out_test_set_size.toLocaleString()} txn held-out set`
+                : "loading…"}
             </span>
           </div>
         </footer>
